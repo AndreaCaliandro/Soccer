@@ -14,6 +14,3 @@ class Giornate(SeleniumETL):
         table = self.element[0].getchildren()[0]
         raw_html = html.tostring(table)
         self.df = pd.read_html(raw_html)[0]
-
-
-
