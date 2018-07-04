@@ -5,6 +5,7 @@ from selenium import webdriver
 from lxml import html
 from lxml.html import soupparser
 
+
 class WebScrapingETL(metaclass=abc.ABCMeta):
 
     def __init__(self, url=None, xpath=None, **kwargs):
@@ -15,6 +16,7 @@ class WebScrapingETL(metaclass=abc.ABCMeta):
         self.extract()
         self.transform()
         self.load()
+        self.closure()
 
     @abstractmethod
     def extract(self):
@@ -28,6 +30,9 @@ class WebScrapingETL(metaclass=abc.ABCMeta):
     def load(self):
         pass
 
+    def closure(self):
+        pass
+
 
 class SeleniumETL(WebScrapingETL):
 
@@ -35,22 +40,29 @@ class SeleniumETL(WebScrapingETL):
         super(SeleniumETL, self).__init__(**kwargs)
         self.driver = driver
 
+    def closure(self):
+        self.driver.close()
+
     def extract(self):
         self.driver.get(self.url)
 
     def transform(self):
+        self.page_interaction()
         html_source = self.driver.page_source
         self.tree = html.fromstring(html_source)
-        self.element = self.tree.xpath(self.xpath)
+
+    def page_interaction(self):
+        pass
 
 
 class SoupHtmlETL(WebScrapingETL):
 
-    def __init__(self, user_agent=None, **kwargs):
+    def __init__(self, user_agent=None, soup=True, **kwargs):
         super(SoupHtmlETL, self).__init__(**kwargs)
         self.headers = requests.utils.default_headers()
         if user_agent:
             self.headers.update({'User-Agent': user_agent})
+        self.soup = soup
 
         def extract(self):
             self.html_source = requests.get(self.url, headers=self.headers)
