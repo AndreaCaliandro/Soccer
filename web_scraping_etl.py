@@ -31,7 +31,7 @@ class WebScrapingETL(metaclass=abc.ABCMeta):
 
 class SeleniumETL(WebScrapingETL):
 
-    def __init__(self, driver=webdriver.Firefox(), **kwargs):
+    def __init__(self, driver=webdriver.Chrome(), **kwargs):
         super(SeleniumETL, self).__init__(**kwargs)
         self.driver = driver
 
